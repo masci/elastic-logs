@@ -49,8 +49,10 @@ function run() {
         // get all the jobs for the current workflow
         const workflowId = process.env['GITHUB_RUN_ID'] || '';
         const repo = process.env['GITHUB_REPOSITORY'] || '';
+        core.debug(`Allow listing ${jobNames.length} jobs in repo ${repo}`);
         const jobs = yield gh.fetchJobs(client, repo, workflowId, jobNames);
         // get the logs
+        core.debug(`Getting logs for ${jobs.length} jobs`);
         for (const j of jobs) {
             const lines = yield gh.fetchLogs(client, repo, j);
             core.debug(`Fetched ${lines.length} lines for job ${j.name}`);

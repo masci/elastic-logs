@@ -15,8 +15,10 @@ export async function run(): Promise<void> {
   // get all the jobs for the current workflow
   const workflowId: string = process.env['GITHUB_RUN_ID'] || ''
   const repo: string = process.env['GITHUB_REPOSITORY'] || ''
+  core.debug(`Allow listing ${jobNames.length} jobs in repo ${repo}`)
   const jobs: gh.Job[] = await gh.fetchJobs(client, repo, workflowId, jobNames)
   // get the logs
+  core.debug(`Getting logs for ${jobs.length} jobs`)
   for (const j of jobs) {
     const lines: string[] = await gh.fetchLogs(client, repo, j)
     core.debug(`Fetched ${lines.length} lines for job ${j.name}`)
