@@ -31,7 +31,7 @@ export async function fetchJobs(
 
   const body: string = await res.readBody()
   const jobs: Job[] = []
-  const all: boolean = allowList.length == 0
+  const all: boolean = allowList.length === 0
   for (const j of JSON.parse(body).jobs) {
     // if there's an allow list, skip job accordingly
     if (!all && !allowList.includes(j.name)) {
