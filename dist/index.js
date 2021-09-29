@@ -1,7 +1,74 @@
 require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 884:
+/***/ 928:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.fetchLogs = exports.fetchJobs = exports.getClient = void 0;
+const http_client_1 = __nccwpck_require__(925);
+const githubAPIUrl = 'https://api.github.com';
+function getClient(ghToken) {
+    return new http_client_1.HttpClient('gh-http-client', [], {
+        headers: {
+            Authorization: `token ${ghToken}`,
+            'Content-Type': 'application/json'
+        }
+    });
+}
+exports.getClient = getClient;
+function fetchJobs(httpClient, repo, runId, allowList) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const url = `${githubAPIUrl}/repos/${repo}/actions/runs/${runId}/jobs`;
+        const res = yield httpClient.get(url);
+        if (res.message.statusCode === undefined || res.message.statusCode >= 400) {
+            throw new Error(`HTTP request failed: ${res.message.statusMessage}`);
+        }
+        const body = yield res.readBody();
+        const jobs = [];
+        const all = allowList.length === 0;
+        for (const j of JSON.parse(body).jobs) {
+            // if there's an allow list, skip job accordingly
+            if (!all && !allowList.includes(j.name)) {
+                continue;
+            }
+            jobs.push({
+                id: j.id,
+                name: j.name
+            });
+        }
+        return jobs;
+    });
+}
+exports.fetchJobs = fetchJobs;
+function fetchLogs(httpClient, repo, job) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const url = `${githubAPIUrl}/repos/${repo}/actions/jobs/${job.id}/logs`;
+        const res = yield httpClient.get(url);
+        if (res.message.statusCode === undefined || res.message.statusCode >= 400) {
+            throw new Error(`HTTP request failed: ${res.message.statusMessage}`);
+        }
+        const body = yield res.readBody();
+        return body.split('\n');
+    });
+}
+exports.fetchLogs = fetchLogs;
+
+
+/***/ }),
+
+/***/ 109:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -37,7 +104,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.run = void 0;
 const core = __importStar(__nccwpck_require__(186));
-const gh = __importStar(__nccwpck_require__(978));
+const gh = __importStar(__nccwpck_require__(928));
 const process = __importStar(__nccwpck_require__(765));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -60,6 +127,7 @@ function run() {
     });
 }
 exports.run = run;
+run();
 
 
 /***/ }),
@@ -1430,73 +1498,6 @@ exports.debug = debug; // for test
 
 /***/ }),
 
-/***/ 978:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.fetchLogs = exports.fetchJobs = exports.getClient = void 0;
-const http_client_1 = __nccwpck_require__(925);
-const githubAPIUrl = 'https://api.github.com';
-function getClient(ghToken) {
-    return new http_client_1.HttpClient('gh-http-client', [], {
-        headers: {
-            Authorization: `token ${ghToken}`,
-            'Content-Type': 'application/json'
-        }
-    });
-}
-exports.getClient = getClient;
-function fetchJobs(httpClient, repo, runId, allowList) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const url = `${githubAPIUrl}/repos/${repo}/actions/runs/${runId}/jobs`;
-        const res = yield httpClient.get(url);
-        if (res.message.statusCode === undefined || res.message.statusCode >= 400) {
-            throw new Error(`HTTP request failed: ${res.message.statusMessage}`);
-        }
-        const body = yield res.readBody();
-        const jobs = [];
-        const all = allowList.length === 0;
-        for (const j of JSON.parse(body).jobs) {
-            // if there's an allow list, skip job accordingly
-            if (!all && !allowList.includes(j.name)) {
-                continue;
-            }
-            jobs.push({
-                id: j.id,
-                name: j.name
-            });
-        }
-        return jobs;
-    });
-}
-exports.fetchJobs = fetchJobs;
-function fetchLogs(httpClient, repo, job) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const url = `${githubAPIUrl}/repos/${repo}/actions/jobs/${job.id}/logs`;
-        const res = yield httpClient.get(url);
-        if (res.message.statusCode === undefined || res.message.statusCode >= 400) {
-            throw new Error(`HTTP request failed: ${res.message.statusMessage}`);
-        }
-        const body = yield res.readBody();
-        return body.split('\n');
-    });
-}
-exports.fetchLogs = fetchLogs;
-
-
-/***/ }),
-
 /***/ 357:
 /***/ ((module) => {
 
@@ -1623,19 +1624,13 @@ module.exports = require("util");
 /******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
 /******/ 	
 /************************************************************************/
-var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be in strict mode.
-(() => {
-"use strict";
-var exports = __webpack_exports__;
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-const run_1 = __nccwpck_require__(884);
-run_1.run();
-
-})();
-
-module.exports = __webpack_exports__;
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module is referenced by other modules so it can't be inlined
+/******/ 	var __webpack_exports__ = __nccwpck_require__(109);
+/******/ 	module.exports = __webpack_exports__;
+/******/ 	
 /******/ })()
 ;
 //# sourceMappingURL=index.js.map
