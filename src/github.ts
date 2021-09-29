@@ -10,7 +10,7 @@ export interface Job {
 export function getClient(ghToken: string): HttpClient {
   return new HttpClient('gh-http-client', [], {
     headers: {
-      Authorization: ghToken,
+      Authorization: `token ${ghToken}`,
       'Content-Type': 'application/json'
     }
   })
@@ -39,4 +39,21 @@ export async function fetchJobs(
   }
 
   return jobs
+}
+
+export async function fetchLogs(
+  httpClient: HttpClient,
+  org: string,
+  repoName: string,
+  job: Job
+): Promise<string[]> {
+  const url = `${githubAPIUrl}/repos/${org}/${repoName}/actions/jobs/${job.id}/logs`
+  const res: HttpClientResponse = await httpClient.get(url)
+
+  if (res.message.statusCode === undefined || res.message.statusCode >= 400) {
+    throw new Error(`HTTP request failed: ${res.message.statusMessage}`)
+  }
+
+  const body: string = await res.readBody()
+  return body.split('\n')
 }
