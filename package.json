@@ -29,6 +29,7 @@
     "@actions/http-client": "^1.0.8"
   },
   "devDependencies": {
+    "@types/jest": "^27.0.2",
     "@types/node": "^16.10.1",
     "@typescript-eslint/parser": "^4.28.3",
     "@vercel/ncc": "^0.31.1",
