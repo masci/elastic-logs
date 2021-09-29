@@ -1,11 +1,13 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'Elastic Logs'
+description: 'Send workflow logs to Elasticsearch'
+author: 'Massimiliano PIppi'
 inputs:
-  milliseconds: # change this
+  repo-token:
     required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+    description: 'GitHub token to access repo data'
+  job-names:
+    required: false
+    description: 'Comma separated names of the jobs to collect logs from, defaults to all jobs'
 runs:
   using: 'node12'
   main: 'dist/index.js'
