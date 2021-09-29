@@ -111,14 +111,18 @@ function run() {
         try {
             // retrieve config params
             const repoToken = core.getInput('repo-token', { required: true });
-            const jobNames = (core.getInput('job-names', { required: false }) || '').split(',');
+            const jobNames = core.getInput('job-names', { required: false }) || '';
+            let allowList = [];
+            if (jobNames !== '') {
+                allowList = jobNames.split(',');
+            }
             // get an authenticated HTTP client for the GitHub API
             const client = gh.getClient(repoToken);
             // get all the jobs for the current workflow
             const workflowId = process.env['GITHUB_RUN_ID'] || '';
             const repo = process.env['GITHUB_REPOSITORY'] || '';
-            core.debug(`Allow listing ${jobNames.length} jobs in repo ${repo}`);
-            const jobs = yield gh.fetchJobs(client, repo, workflowId, jobNames);
+            core.debug(`Allow listing ${allowList.length} jobs in repo ${repo}`);
+            const jobs = yield gh.fetchJobs(client, repo, workflowId, allowList);
             // get the logs
             core.debug(`Getting logs for ${jobs.length} jobs`);
             for (const j of jobs) {

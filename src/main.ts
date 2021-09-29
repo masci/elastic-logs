@@ -7,21 +7,23 @@ export async function run(): Promise<void> {
   try {
     // retrieve config params
     const repoToken: string = core.getInput('repo-token', {required: true})
-    const jobNames: string[] = (
-      core.getInput('job-names', {required: false}) || ''
-    ).split(',')
+    const jobNames: string = core.getInput('job-names', {required: false}) || ''
+    let allowList: string[] = []
+    if (jobNames !== '') {
+      allowList = jobNames.split(',')
+    }
 
     // get an authenticated HTTP client for the GitHub API
     const client: HttpClient = gh.getClient(repoToken)
     // get all the jobs for the current workflow
     const workflowId: string = process.env['GITHUB_RUN_ID'] || ''
     const repo: string = process.env['GITHUB_REPOSITORY'] || ''
-    core.debug(`Allow listing ${jobNames.length} jobs in repo ${repo}`)
+    core.debug(`Allow listing ${allowList.length} jobs in repo ${repo}`)
     const jobs: gh.Job[] = await gh.fetchJobs(
       client,
       repo,
       workflowId,
-      jobNames
+      allowList
     )
     // get the logs
     core.debug(`Getting logs for ${jobs.length} jobs`)
