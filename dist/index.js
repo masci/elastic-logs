@@ -108,21 +108,26 @@ const gh = __importStar(__nccwpck_require__(928));
 const process = __importStar(__nccwpck_require__(765));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
-        // retrieve config params
-        const repoToken = core.getInput('repo-token', { required: true });
-        const jobNames = (core.getInput('job-names', { required: false }) || '').split(',');
-        // get an authenticated HTTP client for the GitHub API
-        const client = gh.getClient(repoToken);
-        // get all the jobs for the current workflow
-        const workflowId = process.env['GITHUB_RUN_ID'] || '';
-        const repo = process.env['GITHUB_REPOSITORY'] || '';
-        core.debug(`Allow listing ${jobNames.length} jobs in repo ${repo}`);
-        const jobs = yield gh.fetchJobs(client, repo, workflowId, jobNames);
-        // get the logs
-        core.debug(`Getting logs for ${jobs.length} jobs`);
-        for (const j of jobs) {
-            const lines = yield gh.fetchLogs(client, repo, j);
-            core.debug(`Fetched ${lines.length} lines for job ${j.name}`);
+        try {
+            // retrieve config params
+            const repoToken = core.getInput('repo-token', { required: true });
+            const jobNames = (core.getInput('job-names', { required: false }) || '').split(',');
+            // get an authenticated HTTP client for the GitHub API
+            const client = gh.getClient(repoToken);
+            // get all the jobs for the current workflow
+            const workflowId = process.env['GITHUB_RUN_ID'] || '';
+            const repo = process.env['GITHUB_REPOSITORY'] || '';
+            core.debug(`Allow listing ${jobNames.length} jobs in repo ${repo}`);
+            const jobs = yield gh.fetchJobs(client, repo, workflowId, jobNames);
+            // get the logs
+            core.debug(`Getting logs for ${jobs.length} jobs`);
+            for (const j of jobs) {
+                const lines = yield gh.fetchLogs(client, repo, j);
+                core.debug(`Fetched ${lines.length} lines for job ${j.name}`);
+            }
+        }
+        catch (e) {
+            core.setFailed(`Run failed: ${e}`);
         }
     });
 }
