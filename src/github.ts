@@ -18,11 +18,11 @@ export function getClient(ghToken: string): HttpClient {
 
 export async function fetchJobs(
   httpClient: HttpClient,
-  org: string,
-  repoName: string,
-  runId: string
+  repo: string,
+  runId: string,
+  allowList: string[]
 ): Promise<Job[]> {
-  const url = `${githubAPIUrl}/repos/${org}/${repoName}/actions/runs/${runId}/jobs`
+  const url = `${githubAPIUrl}/repos/${repo}/actions/runs/${runId}/jobs`
   const res: HttpClientResponse = await httpClient.get(url)
 
   if (res.message.statusCode === undefined || res.message.statusCode >= 400) {
@@ -31,7 +31,13 @@ export async function fetchJobs(
 
   const body: string = await res.readBody()
   const jobs: Job[] = []
+  const all: boolean = allowList.length == 0
   for (const j of JSON.parse(body).jobs) {
+    // if there's an allow list, skip job accordingly
+    if (!all && !allowList.includes(j.name)) {
+      continue
+    }
+
     jobs.push({
       id: j.id,
       name: j.name
@@ -43,11 +49,10 @@ export async function fetchJobs(
 
 export async function fetchLogs(
   httpClient: HttpClient,
-  org: string,
-  repoName: string,
+  repo: string,
   job: Job
 ): Promise<string[]> {
-  const url = `${githubAPIUrl}/repos/${org}/${repoName}/actions/jobs/${job.id}/logs`
+  const url = `${githubAPIUrl}/repos/${repo}/actions/jobs/${job.id}/logs`
   const res: HttpClientResponse = await httpClient.get(url)
 
   if (res.message.statusCode === undefined || res.message.statusCode >= 400) {

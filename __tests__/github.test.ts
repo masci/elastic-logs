@@ -26,9 +26,9 @@ describe('Test jobs list retrieval', () => {
 
     let jobs: Job[] = await fetchJobs(
       instance(mockedHttpClient),
-      'masci',
-      'foo',
-      '123'
+      'masci/foo',
+      '123',
+      []
     )
     const expected: Job[] = [
       {
@@ -56,10 +56,31 @@ describe('Test jobs list retrieval', () => {
     when(mockedHttpClient.get(anything())).thenResolve(instance(mockedResponse))
 
     try {
-      await fetchJobs(instance(mockedHttpClient), 'masci', 'foo', '123')
+      await fetchJobs(instance(mockedHttpClient), 'masci/foo', '123', [])
     } catch (error) {
       expect(error.message).toMatch('HTTP request failed: foo has baz')
     }
+  })
+
+  test('Filter jobs by name', async () => {
+    when(mockedMessage.statusCode).thenReturn(200)
+    when(mockedResponse.message).thenReturn(instance(mockedMessage))
+    when(mockedResponse.readBody()).thenResolve(JSON.stringify(jobsJson))
+    when(mockedHttpClient.get(anything())).thenResolve(instance(mockedResponse))
+
+    let jobs: Job[] = await fetchJobs(
+      instance(mockedHttpClient),
+      'masci/foo',
+      '123',
+      ['e2e']
+    )
+    const expected: Job[] = [
+      {
+        id: 3734144148,
+        name: 'e2e'
+      }
+    ]
+    expect(jobs).toEqual(expected)
   })
 })
 
@@ -83,8 +104,7 @@ describe('Test logs retrieval', () => {
 
     const lines: string[] = await fetchLogs(
       instance(mockedHttpClient),
-      'masci',
-      'datadog',
+      'masci/foo',
       {
         id: 3734144061,
         name: 'test'
@@ -92,7 +112,6 @@ describe('Test logs retrieval', () => {
     )
     expect(lines.length).toBe(3)
     expect(lines[2]).toMatch(`2021-09-28T15:02:00.3781638Z Version: 20210919.1`)
-    console.log(lines)
   })
 
   test('Cannot retrieve the logs', async () => {
@@ -102,7 +121,7 @@ describe('Test logs retrieval', () => {
     when(mockedHttpClient.get(anything())).thenResolve(instance(mockedResponse))
 
     try {
-      await fetchLogs(instance(mockedHttpClient), 'masci', 'foo', {
+      await fetchLogs(instance(mockedHttpClient), 'masci/foo', {
         id: 3734144061,
         name: 'test'
       })
