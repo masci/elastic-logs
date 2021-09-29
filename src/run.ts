@@ -6,9 +6,9 @@ import {HttpClient} from '@actions/http-client'
 export async function run(): Promise<void> {
   // retrieve config params
   const repoToken: string = core.getInput('repo-token', {required: true})
-  const jobNames: string[] = core
-    .getInput('job-names', {required: false})
-    .split(',')
+  const jobNames: string[] = (
+    core.getInput('job-names', {required: false}) || ''
+  ).split(',')
 
   // get an authenticated HTTP client for the GitHub API
   const client: HttpClient = gh.getClient(repoToken)

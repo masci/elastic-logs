@@ -43,9 +43,7 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         // retrieve config params
         const repoToken = core.getInput('repo-token', { required: true });
-        const jobNames = core
-            .getInput('job-names', { required: false })
-            .split(',');
+        const jobNames = (core.getInput('job-names', { required: false }) || '').split(',');
         // get an authenticated HTTP client for the GitHub API
         const client = gh.getClient(repoToken);
         // get all the jobs for the current workflow
