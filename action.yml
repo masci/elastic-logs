@@ -8,6 +8,21 @@ inputs:
   job-names:
     required: false
     description: 'Comma separated names of the jobs to collect logs from, defaults to all jobs'
+  cloud-id:
+    required: false
+    description: cloud id for an Elastic Cloud deployment
+  addresses:
+    required: false
+    description: comma separated values pointing to Elasticsearch nodes
+  username:
+    required: false
+    description: Elasticsearch username
+  password:
+    required: false
+    description: Elasticsearch password
+  index-name:
+    required: false
+    description: Elasticsearch index or data stream to send data to
 runs:
   using: 'node12'
   main: 'dist/index.js'
