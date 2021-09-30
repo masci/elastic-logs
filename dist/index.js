@@ -68,7 +68,7 @@ exports.fetchLogs = fetchLogs;
 
 /***/ }),
 
-/***/ 109:
+/***/ 884:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -115,6 +115,8 @@ function run() {
             let allowList = [];
             if (jobNames !== '') {
                 allowList = jobNames.split(',');
+                // trim job names
+                allowList = allowList.map(s => s.trim());
             }
             // get an authenticated HTTP client for the GitHub API
             const client = gh.getClient(repoToken);
@@ -136,7 +138,6 @@ function run() {
     });
 }
 exports.run = run;
-run();
 
 
 /***/ }),
@@ -1633,13 +1634,20 @@ module.exports = require("util");
 /******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
 /******/ 	
 /************************************************************************/
-/******/ 	
-/******/ 	// startup
-/******/ 	// Load entry module and return exports
-/******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __nccwpck_require__(109);
-/******/ 	module.exports = __webpack_exports__;
-/******/ 	
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+(() => {
+"use strict";
+var exports = __webpack_exports__;
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+/* this module exists to let us import and call the `run` function from the tests */
+const run_1 = __nccwpck_require__(884);
+run_1.run();
+
+})();
+
+module.exports = __webpack_exports__;
 /******/ })()
 ;
 //# sourceMappingURL=index.js.map
