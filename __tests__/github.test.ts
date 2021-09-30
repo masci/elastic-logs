@@ -1,5 +1,5 @@
 import {expect, test} from '@jest/globals'
-import {Job, getClient, fetchJobs, fetchLogs} from '../src/github'
+import {Job, fetchJobs, fetchLogs} from '../src/github'
 import {HttpClient, HttpClientResponse} from '@actions/http-client'
 import {IncomingMessage} from 'http'
 import {mock, instance, when, anything, reset, capture} from 'ts-mockito'
@@ -58,7 +58,7 @@ describe('Test jobs list retrieval', () => {
     try {
       await fetchJobs(instance(mockedHttpClient), 'masci/foo', '123', [])
     } catch (error) {
-      expect(error.message).toMatch('HTTP request failed: foo has baz')
+      expect(String(error)).toMatch('HTTP request failed: foo has baz')
     }
   })
 
@@ -126,7 +126,7 @@ describe('Test logs retrieval', () => {
         name: 'test'
       })
     } catch (error) {
-      expect(error.message).toMatch('HTTP request failed: foo has baz')
+      expect(String(error)).toMatch('HTTP request failed: foo has baz')
     }
   })
 })
