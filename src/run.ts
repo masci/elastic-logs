@@ -1,9 +1,10 @@
 import * as core from '@actions/core'
-import * as gh from './github'
-import * as process from 'process'
 import {HttpClient} from '@actions/http-client'
+import * as process from 'process'
+import * as gh from './github'
+import * as logs from './logs'
 
-const defaultIndex = 'foo'
+const defaultIndex = 'logs-generic-default'
 
 // Split comma separated inputs into an array of trimmed values
 export function getCommaSeparatedInput(value: string): string[] {
@@ -35,6 +36,10 @@ export async function run(): Promise<void> {
     // Elasticsearch index
     const indexName: string =
       core.getInput('index-name', {required: false}) || defaultIndex
+    // Elasticsearch user
+    const username: string = core.getInput('username', {required: false})
+    // Elasticsearch pass
+    const password: string = core.getInput('password', {required: false})
 
     // Ensure either Cloud ID or ES addresses are set
     if (cloudId === '' && addresses.length === 0) {
@@ -57,11 +62,23 @@ export async function run(): Promise<void> {
       allowList
     )
 
-    // get the logs
+    // get a configured ES client
+    const esClient = logs.getESClient(cloudId, addresses, username, password)
+
+    // get the logs for each job
     core.debug(`Getting logs for ${jobs.length} jobs`)
     for (const j of jobs) {
       const lines: string[] = await gh.fetchLogs(client, repo, j)
       core.debug(`Fetched ${lines.length} lines for job ${j.name}`)
+
+      const tmpfile = `./out-${j.id}.log`
+
+      // convert logs to ECS and dump to disk
+      logs.convert(lines, tmpfile)
+
+      // bulk send to ES
+      const result = await logs.bulkSend(esClient, indexName, tmpfile)
+      core.debug(`Bulk request results: ${result}`)
     }
   } catch (e) {
     core.setFailed(`Run failed: ${e}`)
