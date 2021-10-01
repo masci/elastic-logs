@@ -28,4 +28,4 @@ runs:
   main: 'dist/index.js'
 branding:
   icon: 'copy'
-  color: 'teal'
+  color: 'yellow'
