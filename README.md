@@ -18,7 +18,7 @@ some-job:
       run: this-will-fail
     - name: elastic-logs
       if: failure()
-      uses: masci/elastic-logs
+      uses: masci/elastic-logs@v1
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         cloud-id: ${{ secrets.CLOUD_ID }}
