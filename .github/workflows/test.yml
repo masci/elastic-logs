@@ -19,7 +19,7 @@ jobs:
   # Make sure the action works on a clean machine without building.
   test:
     runs-on: ubuntu-latest
-    needs: build # Wait of the other job to finish so we have some logs to fetch.
+    needs: build # Wait for the other job to finish so we have some logs to fetch.
     steps:
       - name: checkout
         uses: actions/checkout@v2
