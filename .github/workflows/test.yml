@@ -27,3 +27,6 @@ jobs:
         uses: ./
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
+          cloud-id: ${{ secrets.CLOUD_ID }}
+          username: ${{ secrets.ES_USER }}
+          password: ${{ secrets.ES_PASS }}
