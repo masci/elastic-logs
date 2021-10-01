@@ -30,3 +30,4 @@ jobs:
           cloud-id: ${{ secrets.CLOUD_ID }}
           username: ${{ secrets.ES_USER }}
           password: ${{ secrets.ES_PASS }}
+          job-names: build
