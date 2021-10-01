@@ -1,13 +1,15 @@
 import * as process from 'process'
-import {run} from '../src/run'
+import {anything, capture, spy, when} from 'ts-mockito'
 import * as gh from '../src/github'
-import {anything, spy, when, verify, capture} from 'ts-mockito'
+import {run} from '../src/run'
 
 const spiedGH = spy(gh)
 
 describe('Test config params', () => {
   beforeEach(() => {
+    // put here required config inputs
     process.env['INPUT_REPO-TOKEN'] = 'qwerty'
+    process.env['INPUT_CLOUD-ID'] = 'asdfgh'
     when(
       spiedGH.fetchJobs(anything(), anything(), anything(), anything())
     ).thenResolve([]) // resolve with an empty array to avoid the subsequent API call
@@ -27,6 +29,8 @@ describe('Test config params', () => {
 
   test('Missing Elastic config params', async () => {
     // run
+    process.env['INPUT_CLOUD-ID'] = ''
+    process.env['INPUT_ADDRESSES'] = ''
     try {
       await run()
     } catch (e) {

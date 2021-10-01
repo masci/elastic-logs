@@ -1,6 +1,4 @@
-import {run} from '../src/run'
 import {convert} from '../src/logs'
-import {anything, spy, when, verify, capture} from 'ts-mockito'
 import {readFileSync, rmSync} from 'fs'
 import {mkdtemp} from 'fs/promises'
 import * as os from 'os'
@@ -11,7 +9,7 @@ describe('Test logs module', () => {
 
   afterEach(() => {})
 
-  test('test conversion', async () => {
+  test('conversion', async () => {
     const tmpDir = await mkdtemp(path.join(os.tmpdir(), 'elastic-logs-'))
     const inFile = './__tests__/logs.txt'
     const outFile = path.join(tmpDir, 'out.log')
