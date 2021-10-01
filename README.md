@@ -4,6 +4,8 @@
 
 This action collect logs from a workflow run and send them to Elasticsearch
 
+![Kibana](img/kibana.png)
+
 ## Usage
 
 ```yaml
