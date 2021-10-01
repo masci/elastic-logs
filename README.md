@@ -7,11 +7,15 @@ This action collect logs from a workflow run and send them to Elasticsearch
 ## Usage
 
 ```yaml
-e2e:
+some-job:
   runs-on: ubuntu-latest
-  on: failure
   steps:
+    - name: checkout
+      uses: actions/checkout@v2
+    - name: build
+      run: this-will-fail
     - name: elastic-logs
+      if: failure()
       uses: masci/elastic-logs
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
